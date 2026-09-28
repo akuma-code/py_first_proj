@@ -1,1 +1,17 @@
-[]
+[
+  {
+    "sourceW": 650,
+    "sourceH": 650,
+    "gridType": "simple"
+  },
+  {
+    "sourceW": 650,
+    "sourceH": 650,
+    "gridType": "skf"
+  },
+  {
+    "sourceW": 154,
+    "sourceH": 5478,
+    "gridType": "skf"
+  }
+]

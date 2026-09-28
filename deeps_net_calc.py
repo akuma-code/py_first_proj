@@ -11,6 +11,12 @@ GRID_TYPES = {
     "hooks":  (40, 30),
 }
 
+NET_NAME = {
+    "skf":"SKF",
+    "simple":"Простая",
+    "hooks":"С крючками",
+}
+
 def get_history_path():
     if getattr(sys, "frozen", False):
         # .exe — кладём рядом с exe-файлом
@@ -45,7 +51,7 @@ FONT_TITLE  = ("Segoe UI", 16, "bold")
 FONT_RESULT = ("Segoe UI", 15, "bold")
 
 # --- Размеры ---
-ENTRY_WIDTH_CHARS = 6
+ENTRY_WIDTH_CHARS = 10
 SELECTOR_ITEM_PADX = 22
 SELECTOR_ITEM_PADY = 8
 
@@ -107,7 +113,7 @@ class GridTypeSelector(BorderedFrame):
         for i, gt in enumerate(GRID_TYPES):
             btn = tk.Label(
                 self,
-                text=gt,
+                text=NET_NAME[gt],
                 font=FONT_MAIN,
                 bg=SUBBLOCK_COLOR,
                 fg=MUTED_COLOR,
@@ -174,7 +180,7 @@ class BigEntry(tk.Frame):
     """Поле ввода с крупным шрифтом и подписью снизу (без собственной обводки)."""
 
     def __init__(self, parent, label_text, width=ENTRY_WIDTH_CHARS):
-        super().__init__(parent, bg=SUBBLOCK_COLOR)
+        super().__init__(parent, bg=PANEL_COLOR)
 
         self.entry = tk.Entry(
             self,
@@ -196,7 +202,7 @@ class BigEntry(tk.Frame):
             self,
             text=label_text,
             font=FONT_LABEL,
-            bg=SUBBLOCK_COLOR,
+            bg=PANEL_COLOR,
             fg=MUTED_COLOR,
         ).pack(pady=(4, 0), anchor="center")
 
@@ -216,7 +222,8 @@ class BigEntry(tk.Frame):
 # ---------- Карточка результата ----------
 
 class ResultCard(BorderedFrame):
-    def __init__(self, parent, source_w, source_h, grid_type, on_delete, on_change):
+    def __init__(self, parent, index, source_w, source_h, grid_type,
+                 on_delete, on_change):
         super().__init__(parent, bg=CARD_COLOR, border=BORDER_COLOR,
                          padx=16, pady=14)
 
@@ -225,6 +232,16 @@ class ResultCard(BorderedFrame):
         self.grid_type_var = tk.StringVar(value=grid_type)
         self.on_delete = on_delete
         self.on_change = on_change
+
+        # --- Номер карточки ---
+        self.index_label = tk.Label(
+            self,
+            text=f"#{index}",
+            font=("Segoe UI", 18, "bold"),
+            bg=CARD_COLOR,
+            fg=MUTED_COLOR,
+        )
+        self.index_label.pack(side="left", padx=(0, 16))
 
         left = tk.Frame(self, bg=CARD_COLOR)
         left.pack(side="left", fill="both", expand=True)
@@ -258,6 +275,10 @@ class ResultCard(BorderedFrame):
 
         self.update_result()
 
+    def set_index(self, index):
+        """Обновляет отображаемый номер карточки."""
+        self.index_label.config(text=f"#{index}")
+
     def _on_grid_change(self):
         self.update_result()
         self.on_change()
@@ -281,39 +302,41 @@ class ResultCard(BorderedFrame):
 class NetCalculatorApp:
     def __init__(self, root):
         self.root = root
-        root.title("netCalculator")
-        root.geometry("560x640")
+        root.title("Калькулятор москиток")
+        # root.geometry("700x800")
         root.configure(bg=BG_COLOR)
-        root.minsize(500, 560)
-
+        root.minsize(650, 800)
+        root.resizable(True, True)
+        root.update_idletasks()
+        root.geometry(f"650x{root.winfo_reqheight()}")
         # === Верхняя панель ===
         top = BorderedFrame(root, bg=PANEL_COLOR, border=BORDER_COLOR,
                             padx=20, pady=20)
         top.pack(fill="x", padx=14, pady=(14, 8))
 
         tk.Label(
-            top, text="netCalculator", font=FONT_TITLE,
+            top, text="Расчет сеток по световому проему", font=FONT_TITLE,
             bg=PANEL_COLOR, fg=TEXT_COLOR
         ).grid(row=0, column=0, columnspan=3, sticky="nsew", pady=(0, 16))
 
         # --- Подблок 1: поля ввода ---
-        sub_inputs = BorderedFrame(top, bg=SUBBLOCK_COLOR, border=BORDER_COLOR,
+        sub_inputs = BorderedFrame(top, bg=PANEL_COLOR, border=BORDER_COLOR, thickness=0,
                                    padx=16, pady=12)
         sub_inputs.grid(row=1, column=0, sticky="nsew")
 
-        self.entry_w = BigEntry(sub_inputs, "ШИРИНА (sourceW)")
-        self.entry_w.pack(side="left")
+        self.entry_w = BigEntry(sub_inputs, "ШИРИНА")
+        self.entry_w.pack(side="left",expand=True)
 
         tk.Label(
             sub_inputs, text="×", font=("Segoe UI", 22, "bold"),
-            bg=SUBBLOCK_COLOR, fg=MUTED_COLOR
-        ).pack(side="left", padx=16)
+            bg=PANEL_COLOR, fg=MUTED_COLOR
+        ).pack(side="left", padx=16, anchor="n", pady=10)
 
-        self.entry_h = BigEntry(sub_inputs, "ВЫСОТА (sourceH)")
-        self.entry_h.pack(side="left")
+        self.entry_h = BigEntry(sub_inputs, "ВЫСОТА")
+        self.entry_h.pack(side="left", expand=True)
 
         # --- Подблок 2: кнопки действий ---
-        sub_actions = BorderedFrame(top, bg=SUBBLOCK_COLOR, border=BORDER_COLOR,
+        sub_actions = BorderedFrame(top, bg=SUBBLOCK_COLOR, border=BORDER_COLOR, 
                                     padx=16, pady=12)
         sub_actions.grid(row=1, column=1, sticky="nsew", padx=(12, 0))
 
@@ -334,30 +357,30 @@ class NetCalculatorApp:
         ).pack()
 
         # --- Подблок 3: переключатель типа сетки ---
-        sub_grid = BorderedFrame(top, bg=SUBBLOCK_COLOR, border=BORDER_COLOR,
-                                 padx=16, pady=12)
+        sub_grid = BorderedFrame(top, bg=SUBBLOCK_COLOR, border=BORDER_COLOR, thickness=0,
+                                 padx=16, pady=12 )
         sub_grid.grid(row=2, column=0, columnspan=3, sticky="ew", pady=(12, 0))
 
         self.grid_type_var = tk.StringVar(value="skf")
         self.selector = GridTypeSelector(sub_grid, self.grid_type_var, stretch=True)
         self.selector.pack(fill="x")
 
-        tk.Label(
-            sub_grid, text="ТИП СЕТКИ", font=FONT_LABEL,
-            bg=SUBBLOCK_COLOR, fg=MUTED_COLOR
-        ).pack(pady=(6, 0))
+        # tk.Label(
+        #     sub_grid, text="ТИП СЕТКИ", font=FONT_LABEL,
+        #     bg=SUBBLOCK_COLOR, fg=MUTED_COLOR
+        # ).pack(pady=(6, 0))
 
         # Растягиваем подблоки по ширине
         top.columnconfigure(0, weight=1)
         top.columnconfigure(1, weight=0)
 
         # === Список карточек ===
-        list_wrap = BorderedFrame(root, bg=BG_COLOR, border=BORDER_COLOR,
-                                  padx=6, pady=6)
-        list_wrap.pack(fill="both", expand=True, padx=14, pady=(6, 14))
+        self.list_wrap = BorderedFrame(root, bg=BG_COLOR, border=BORDER_COLOR,
+                                       padx=6, pady=6)
+        # ВАЖНО: пока не пакуем. Управление видимостью — через _update_list_visibility().
 
-        self.canvas = tk.Canvas(list_wrap, bg=BG_COLOR, highlightthickness=0)
-        scrollbar = ttk.Scrollbar(list_wrap, orient="vertical",
+        self.canvas = tk.Canvas(self.list_wrap, bg=BG_COLOR, highlightthickness=0)
+        scrollbar = ttk.Scrollbar(self.list_wrap, orient="vertical",
                                   command=self.canvas.yview)
         self.canvas.configure(yscrollcommand=scrollbar.set)
 
@@ -387,6 +410,7 @@ class NetCalculatorApp:
         self.entry_h.bind_enter(self._on_enter)
 
         self._load_cards()
+        self._update_list_visibility()
 
     # ---------- Прокрутка ----------
     def _on_mousewheel(self, event):
@@ -432,8 +456,10 @@ class NetCalculatorApp:
         self._save_cards()
 
     def _add_card(self, w, h, grid_type):
+        next_index = len(self.cards_frame.winfo_children()) + 1
         card = ResultCard(
             self.cards_frame,
+            index=next_index,
             source_w=w,
             source_h=h,
             grid_type=grid_type,
@@ -441,11 +467,20 @@ class NetCalculatorApp:
             on_change=self._save_cards,
         )
         card.pack(fill="x", pady=6, padx=2)
+        self._update_list_visibility()
         return card
 
     def delete_card(self, card):
         card.destroy()
+        self._renumber_cards()   # внутри вызывает _update_list_visibility()
         self._save_cards()
+
+    # def _renumber_cards(self):
+    #     """Перенумеровывает карточки после удаления/очистки."""
+    #     for i, widget in enumerate(self.cards_frame.winfo_children(), start=1):
+    #         if isinstance(widget, ResultCard):
+    #             widget.set_index(i)
+    #             self._update_list_visibility()
 
     def clear_all(self):
         if not self.cards_frame.winfo_children():
@@ -454,6 +489,7 @@ class NetCalculatorApp:
             return
         for widget in self.cards_frame.winfo_children():
             widget.destroy()
+        self._update_list_visibility()
         self._save_cards()
 
     # ---------- История ----------
@@ -476,6 +512,26 @@ class NetCalculatorApp:
             except (KeyError, TypeError, ValueError):
                 continue
             self._add_card(w, h, gt)
+    def _update_list_visibility(self):
+        """Показывает контейнер карточек только если есть хотя бы одна карточка."""
+        has_cards = any(
+            isinstance(w, ResultCard)
+            for w in self.cards_frame.winfo_children()
+        )
+        if has_cards and not self.list_wrap.winfo_ismapped():
+            self.list_wrap.pack(fill="both", expand=True,
+                                padx=14, pady=(6, 14))
+        elif not has_cards and self.list_wrap.winfo_ismapped():
+            self.list_wrap.pack_forget()
+            self.root.update_idletasks()
+            self.root.geometry(f"650{min(self.root.winfo_reqheight(), 800)}")
+
+    def _renumber_cards(self):
+        """Перенумеровывает карточки и обновляет видимость списка."""
+        for i, widget in enumerate(self.cards_frame.winfo_children(), start=1):
+            if isinstance(widget, ResultCard):
+                widget.set_index(i)
+        self._update_list_visibility()
 
 
 if __name__ == "__main__":
