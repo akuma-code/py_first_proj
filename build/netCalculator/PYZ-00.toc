@@ -327,6 +327,32 @@
   ('socket',
    'C:\\Users\\prodnyansky\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\socket.py',
    'PYMODULE'),
+  ('src', '-', 'PYMODULE'),
+  ('src.Frames', '-', 'PYMODULE'),
+  ('src.Frames.BigEntry',
+   'C:\\Users\\prodnyansky\\Desktop\\AKUMA\\JS '
+   'Projects\\py_first_proj\\src\\Frames\\BigEntry.py',
+   'PYMODULE'),
+  ('src.Frames.HoverButton',
+   'C:\\Users\\prodnyansky\\Desktop\\AKUMA\\JS '
+   'Projects\\py_first_proj\\src\\Frames\\HoverButton.py',
+   'PYMODULE'),
+  ('src.Frames.MainFrame',
+   'C:\\Users\\prodnyansky\\Desktop\\AKUMA\\JS '
+   'Projects\\py_first_proj\\src\\Frames\\MainFrame.py',
+   'PYMODULE'),
+  ('src.Frames.ResultCard',
+   'C:\\Users\\prodnyansky\\Desktop\\AKUMA\\JS '
+   'Projects\\py_first_proj\\src\\Frames\\ResultCard.py',
+   'PYMODULE'),
+  ('src.Frames.TypeSelector',
+   'C:\\Users\\prodnyansky\\Desktop\\AKUMA\\JS '
+   'Projects\\py_first_proj\\src\\Frames\\TypeSelector.py',
+   'PYMODULE'),
+  ('src.THEME',
+   'C:\\Users\\prodnyansky\\Desktop\\AKUMA\\JS '
+   'Projects\\py_first_proj\\src\\THEME.py',
+   'PYMODULE'),
   ('ssl',
    'C:\\Users\\prodnyansky\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\ssl.py',
    'PYMODULE'),

@@ -1,5 +1,8 @@
 {
     "python.analysis.extraPaths": [
-        "./funcs"
+        "./funcs",
+        "./src",
+        "./src/Frames",
+
     ]
 }

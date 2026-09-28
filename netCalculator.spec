@@ -3,7 +3,7 @@
 
 a = Analysis(
     ['deeps_net_calc.py'],
-    pathex=[],
+    pathex=['.'],
     binaries=[],
     datas=[],
     hiddenimports=[],
@@ -35,4 +35,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    icon=['C:/Users/prodnyansky/Desktop/AKUMA/JS Projects/py_first_proj/favicon.ico'],
 )
