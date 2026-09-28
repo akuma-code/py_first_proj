@@ -36,7 +36,7 @@ class ResultCard(BorderedFrame):
 
         tk.Label(
             left,
-            text=f"Источник: {source_w} × {source_h}",
+            text=f"{source_w} × {source_h}",
             font=FONT_LABEL,
             bg=CARD_COLOR,
             fg=MUTED_COLOR,

@@ -3,7 +3,7 @@
 
 a = Analysis(
     ['deeps_net_calc.py'],
-    pathex=['.'],
+    pathex=['.','./src', './src/Frames'],
     binaries=[],
     datas=[],
     hiddenimports=[],
