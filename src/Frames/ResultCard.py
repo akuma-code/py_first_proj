@@ -40,7 +40,7 @@ class ResultCard(BorderedFrame):
             font=FONT_LABEL,
             bg=CARD_COLOR,
             fg=MUTED_COLOR,
-        ).pack(anchor="w", pady=(4, 0))
+        ).pack(anchor="w", pady=(4, 0), padx=0)
 
         right = tk.Frame(self, bg=CARD_COLOR)
         right.pack(side="right")
